@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boş vaxt sorğusu</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="bg-glow glow-3"></div>
+    <div class="bg-grid"></div>
+    <canvas id="particles"></canvas>
+
+    <div class="scene">
+        <div class="main-card" id="card">
+            <div class="card-shine"></div>
+
+            <div class="card-header">
+                <div class="logo-badge"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <div>
+                    <h1>Boş vaxt sorğusu</h1>
+                    <p class="subtitle">Bir neçə sürətli sualı cavablandır</p>
+                </div>
+            </div>
+
+            <form method="POST" class="survey-form" id="surveyForm">
+
+                <div class="form-grid">
+                    <div class="input-group" style="--i:0">
+                        <label for="age"><i class="fa-solid fa-user-clock"></i> Yaşınız neçədir?</label>
+                        <div class="field">
+                            <input type="number" id="age" name="age" min="6" max="18" placeholder="14" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="--i:1">
+                        <label><i class="fa-solid fa-graduation-cap"></i> Neçənci sinifdə oxuyursunuz?</label>
+                        <select name="grade" required>
+                            <option value="" disabled selected>Seçin</option>
+                            {% for i in range(1, 12) %}
+                                <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="input-group" style="--i:2">
+                        <label><i class="fa-solid fa-calendar-day"></i> Həftənin hansı günü daha çox boş vaxtınız olur?</label>
+                        <select name="free_day" required>
+                            <option value="" disabled selected>Seçin</option>
+                            <option value="Bazar ertəsi">Bazar ertəsi</option>
+                            <option value="Çərşənbə axşamı">Çərşənbə axşamı</option>
+                            <option value="Çərşənbə">Çərşənbə</option>
+                            <option value="Cümə axşamı">Cümə axşamı</option>
+                            <option value="Cümə">Cümə</option>
+                            <option value="Şənbə">Şənbə</option>
+                            <option value="Bazar">Bazar</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group" style="--i:3">
+                        <label><i class="fa-solid fa-gamepad"></i> Ən sevdiyiniz hobbiniz?</label>
+                        <select name="activity_id" required>
+                            <option value="" disabled selected>Seçin</option>
+                            {% for act in activities %}
+                                <option value="{{ act[0] }}">{{ act[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="input-group" style="--i:4">
+                        <label><i class="fa-solid fa-users"></i> Bu hobbinizi kiminlə daha çox sevirsiniz?</label>
+                        <select name="companion_id" required>
+                            <option value="" disabled selected>Seçin</option>
+                            {% for comp in companions %}
+                                <option value="{{ comp[0] }}">{{ comp[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="input-group" style="--i:5">
+                        <label for="hours"><i class="fa-solid fa-clock"></i> Gündə bu hobbiyə neçə saat ayırırsınız?</label>
+                        <div class="field">
+                            <input type="number" id="hours" step="0.5" name="hours_per_day" min="0" max="12" placeholder="2" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-grid align-end">
+                    <div class="input-group" style="--i:6">
+                        <label><i class="fa-solid fa-star"></i> Hobbinizdən neçə qədər məmnunsunuz? (1–5)</label>
+                        <select name="satisfaction" required>
+                            <option value="" disabled selected>Seçin</option>
+                            <option value="5">⭐⭐⭐⭐⭐ 5 - Çox məmnunam</option>
+                            <option value="4">⭐⭐⭐⭐ 4 - Yaxşı</option>
+                            <option value="3">⭐⭐⭐ 3 - Orta</option>
+                            <option value="2">⭐⭐ 2 - Az</option>
+                            <option value="1">⭐ 1 - Heç məmnun deyiləm</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group" style="--i:7">
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <span class="btn-state btn-idle"><span>Göndər</span> <i class="fa-solid fa-paper-plane"></i></span>
+                            <span class="btn-state btn-loading"><span class="spinner"></span></span>
+                            <span class="btn-state btn-done"><i class="fa-solid fa-check"></i> Göndərildi</span>
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+
+            <div id="successMessage" style="display: none; text-align: center; padding: 30px 10px; color: white;">
+                <div style="font-size: 45px; margin-bottom: 15px;">⚠️</div>
+                <h2 style="font-size: 20px; margin-bottom: 10px; color: #fff;">Siz artıq bu sorğunu cavablandırmısınız!</h2>
+                <p style="color: #94a3b8; font-size: 14px;">Hər cihazdan yalnız bir dəfə cavab qəbul olunur.</p>
+            </div>
+
+        </div>
+    </div>
+
+    </div>
+
+    <canvas id="confetti"></canvas>
+
+<script>
+
+</script>
+
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>
