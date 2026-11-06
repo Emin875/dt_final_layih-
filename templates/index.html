@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='image/logo.jpg') }}">
 </head>
 <body>
     <div class="container">
@@ -100,11 +101,11 @@
                         <label><i class="fa-solid fa-star"></i> Hobbinizdən neçə qədər məmnunsunuz? (1–5)</label>
                         <select name="satisfaction" required>
                             <option value="" disabled selected>Seçin</option>
-                            <option value="5">⭐⭐⭐⭐⭐ 5 - Çox məmnunam</option>
-                            <option value="4">⭐⭐⭐⭐ 4 - Yaxşı</option>
-                            <option value="3">⭐⭐⭐ 3 - Orta</option>
-                            <option value="2">⭐⭐ 2 - Az</option>
-                            <option value="1">⭐ 1 - Heç məmnun deyiləm</option>
+                            <option value="5">5 - Çox məmnunam</option>
+                            <option value="4">4 - Yaxşı</option>
+                            <option value="3">3 - Orta</option>
+                            <option value="2">2 - Az</option>
+                            <option value="1">1 - Heç məmnun deyiləm</option>
                         </select>
                     </div>
 
@@ -127,13 +128,33 @@
 
         </div>
     </div>
-
     </div>
 
-    <canvas id="confetti"></canvas>
+<button type="button" class="theme-toggle" id="themeToggle" aria-label="Rejimi dəyiş">
+    <i class="fa-solid fa-sun"></i>
+</button>
 
 <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark'; }
+    catch (e) { document.documentElement.dataset.theme = 'dark'; }
 
+        (function () {
+        var root = document.documentElement;
+        var btn = document.getElementById('themeToggle');
+        var icon = btn.querySelector('i');
+
+        function apply(theme) {
+            root.dataset.theme = theme;
+            icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            try { localStorage.setItem('theme', theme); } catch (e) {}
+        }
+
+        apply(root.dataset.theme || 'dark');
+
+        btn.addEventListener('click', function () {
+            apply(root.dataset.theme === 'dark' ? 'light' : 'dark');
+        });
+    })();
 </script>
 
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
