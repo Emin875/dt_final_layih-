@@ -147,7 +147,7 @@ body {
 
 .input-group {
     display: flex; flex-direction: column; gap: 10px;
-    animation: rise .7s var(--ease) both;
+    animation: rise .7s var(--ease) backwards;
     animation-delay: calc(.25s + var(--i, 0) * .08s);
 }
 @keyframes rise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
@@ -334,6 +334,34 @@ select.enhanced { display: none; }
 }
 .modal-close:hover { background: rgba(255,255,255,.18); transform: translateY(-2px); }
 
+.reset-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 20px;
+    min-height: 48px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #cbd5e1;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.reset-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+}
+
+.reset-btn:active {
+    transform: scale(0.96);
+}
+
 .toast {
     position: fixed; left: 50%; bottom: 30px; z-index: 150;
     padding: 14px 22px; border-radius: 14px; font-weight: 500; font-size: .95rem;
@@ -354,4 +382,79 @@ select.enhanced { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+.theme-toggle {
+    position: fixed; top: 20px; right: 20px; z-index: 50;
+    width: 46px; height: 46px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 1.1rem; color: var(--text-main); cursor: pointer;
+    background: var(--glass-strong);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    transition: transform .3s var(--ease), background .3s;
+}
+.theme-toggle:hover { transform: rotate(20deg) scale(1.08); }
+
+[data-theme="light"] {
+    --bg-dark: #eef2ff;
+    --text-main: #0f172a;
+    --text-muted: #52607a;
+    --glass: rgba(255, 255, 255, 0.7);
+    --glass-strong: rgba(255, 255, 255, 0.8);
+    --border: rgba(15, 23, 42, 0.14);
+}
+
+[data-theme="light"] .bg-glow { opacity: .35; }
+[data-theme="light"] .glow-3 { opacity: .2; }
+
+[data-theme="light"] .bg-grid {
+    background-image:
+        linear-gradient(rgba(15,23,42,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15,23,42,.06) 1px, transparent 1px);
+}
+
+[data-theme="light"] .main-card {
+    background: linear-gradient(145deg, rgba(255,255,255,.88), rgba(255,255,255,.55));
+    box-shadow:
+        0 40px 80px -20px rgba(15,23,42,.25),
+        0 0 80px rgba(99,102,241,.15),
+        inset 0 1px 0 rgba(255,255,255,.9);
+}
+[data-theme="light"] .card-shine {
+    background: radial-gradient(500px circle at var(--mx) var(--my), rgba(99,102,241,.09), transparent 45%);
+}
+
+[data-theme="light"] .card-header h1 {
+    background-image: linear-gradient(120deg, #1e1b4b 20%, #4f46e5 55%, #0891b2 100%);
+}
+
+[data-theme="light"] .input-group label { color: #1e293b; }
+
+[data-theme="light"] .field,
+[data-theme="light"] .select-trigger {
+    background: rgba(255, 255, 255, .85);
+}
+[data-theme="light"] .field:hover,
+[data-theme="light"] .select-trigger:hover { border-color: rgba(15,23,42,.35); }
+[data-theme="light"] .field:focus-within,
+[data-theme="light"] .select.open .select-trigger { background: #fff; }
+
+[data-theme="light"] .field input::placeholder { color: #94a3b8; }
+[data-theme="light"] .select-trigger .value.placeholder { color: #64748b; }
+
+[data-theme="light"] .select-menu {
+    background: rgba(255, 255, 255, .96);
+    box-shadow: 0 25px 50px -12px rgba(15,23,42,.3);
+    scrollbar-color: rgba(15,23,42,.25) transparent;
+}
+[data-theme="light"] .select-option { color: #1e293b; }
+[data-theme="light"] .select-option:hover,
+[data-theme="light"] .select-option.active { background: rgba(99,102,241,.14); color: #1e1b4b; }
+[data-theme="light"] .select-option.selected { color: var(--primary-2); }
+
+[data-theme="light"] .reset-btn {
+    color: #475569;
+    background: rgba(15, 23, 42, 0.05);
+    border-color: rgba(15, 23, 42, 0.15);
 }
