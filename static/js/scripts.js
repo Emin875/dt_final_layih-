@@ -1,8 +1,10 @@
 (() => {
     const form = document.getElementById('surveyForm');
+    if (!form) return;
     form.noValidate = true;
     const card = document.getElementById('card');
     const btn = document.getElementById('submitBtn');
+    const resetBtn = document.getElementById('resetBtn');
     const modal = document.getElementById('successModal');
     const toast = document.getElementById('toast');
     const fill = document.getElementById('progressFill');
@@ -87,6 +89,7 @@
             valueEl.textContent = placeholder;
             valueEl.classList.add('placeholder');
             menu.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+            menu.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
         }});
     });
 
@@ -113,12 +116,12 @@
             groupOf(el).classList.toggle('is-filled', ok);
             if (ok) groupOf(el).classList.remove('is-error');
         });
-        fill.style.width = (done / fields.length * 100) + '%';
-        progressText.textContent = done + ' / ' + fields.length;
+        if (fill) fill.style.width = (done / fields.length * 100) + '%';
+        if (progressText) progressText.textContent = done + ' / ' + fields.length;
     }
     form.addEventListener('input', refresh);
 
-    if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
+    if (card && !reduceMotion && window.matchMedia('(hover: hover)').matches) {
         card.addEventListener('mousemove', e => {
             const r = card.getBoundingClientRect();
             const x = (e.clientX - r.left) / r.width;
@@ -141,11 +144,24 @@
     });
 
     function showToast(msg) {
+        if (!toast) { alert(msg); return; }
         toast.textContent = msg;
         toast.classList.add('show');
         clearTimeout(showToast.t);
         showToast.t = setTimeout(() => toast.classList.remove('show'), 3500);
     }
+
+    function resetAll() {
+        form.reset();
+        customs.forEach(c => { c.close(); c.reset(); });
+        form.querySelectorAll('.input-group').forEach(g =>
+            g.classList.remove('is-filled', 'is-error', 'shake'));
+        btn.classList.remove('loading', 'done');
+        btn.disabled = false;
+        refresh();
+    }
+
+    if (resetBtn) resetBtn.addEventListener('click', resetAll);
 
     form.addEventListener('submit', async e => {
         e.preventDefault();
@@ -175,7 +191,13 @@
 
             btn.classList.remove('loading');
             btn.classList.add('done');
-            setTimeout(() => { modal.classList.add('show'); modal.setAttribute('aria-hidden', 'false'); burst(); }, 500);
+
+            if (modal) {
+                setTimeout(() => { modal.classList.add('show'); modal.setAttribute('aria-hidden', 'false'); burst(); }, 500);
+            } else {
+                burst();
+                setTimeout(resetAll, 1800);
+            }
         } catch (err) {
             btn.classList.remove('loading');
             btn.disabled = false;
@@ -183,56 +205,58 @@
         }
     });
 
-    function closeModal() {
-        modal.classList.remove('show');
-        modal.setAttribute('aria-hidden', 'true');
-        form.reset();
-        customs.forEach(c => c.reset());
-        btn.classList.remove('done');
-        btn.disabled = false;
-        refresh();
+    if (modal) {
+        function closeModal() {
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+            resetAll();
+        }
+        const modalClose = document.getElementById('modalClose');
+        if (modalClose) modalClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('show')) closeModal(); });
     }
-    document.getElementById('modalClose').addEventListener('click', closeModal);
-    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('show')) closeModal(); });
 
     refresh();
 
     const pc = document.getElementById('particles');
-    const pctx = pc.getContext('2d');
-    let pw, ph, dots = [];
+    if (pc) {
+        const pctx = pc.getContext('2d');
+        let pw, ph, dots = [];
 
-    function sizeP() {
-        pw = pc.width = innerWidth; ph = pc.height = innerHeight;
-        dots = Array.from({ length: Math.min(70, Math.floor(pw * ph / 22000)) }, () => ({
-            x: Math.random() * pw, y: Math.random() * ph,
-            r: Math.random() * 1.8 + .4,
-            vx: (Math.random() - .5) * .25, vy: -Math.random() * .35 - .05,
-            a: Math.random() * .5 + .2
-        }));
+        function sizeP() {
+            pw = pc.width = innerWidth; ph = pc.height = innerHeight;
+            dots = Array.from({ length: Math.min(70, Math.floor(pw * ph / 22000)) }, () => ({
+                x: Math.random() * pw, y: Math.random() * ph,
+                r: Math.random() * 1.8 + .4,
+                vx: (Math.random() - .5) * .25, vy: -Math.random() * .35 - .05,
+                a: Math.random() * .5 + .2
+            }));
+        }
+        function tickP() {
+            pctx.clearRect(0, 0, pw, ph);
+            dots.forEach(d => {
+                d.x += d.vx; d.y += d.vy;
+                if (d.y < -5) { d.y = ph + 5; d.x = Math.random() * pw; }
+                if (d.x < -5) d.x = pw + 5;
+                if (d.x > pw + 5) d.x = -5;
+                pctx.beginPath();
+                pctx.arc(d.x, d.y, d.r, 0, 6.283);
+                pctx.fillStyle = `rgba(165,180,252,${d.a})`;
+                pctx.fill();
+            });
+            requestAnimationFrame(tickP);
+        }
+        sizeP(); addEventListener('resize', sizeP);
+        if (!reduceMotion) tickP();
     }
-    function tickP() {
-        pctx.clearRect(0, 0, pw, ph);
-        dots.forEach(d => {
-            d.x += d.vx; d.y += d.vy;
-            if (d.y < -5) { d.y = ph + 5; d.x = Math.random() * pw; }
-            if (d.x < -5) d.x = pw + 5; if (d.x > pw + 5) d.x = -5;
-            pctx.beginPath();
-            pctx.arc(d.x, d.y, d.r, 0, 6.283);
-            pctx.fillStyle = `rgba(165,180,252,${d.a})`;
-            pctx.fill();
-        });
-        requestAnimationFrame(tickP);
-    }
-    sizeP(); addEventListener('resize', sizeP);
-    if (!reduceMotion) tickP();
 
     const cc = document.getElementById('confetti');
-    const cctx = cc.getContext('2d');
+    const cctx = cc ? cc.getContext('2d') : null;
     let pieces = [], running = false;
 
     function burst() {
-        if (reduceMotion) return;
+        if (!cc || reduceMotion) return;
         cc.width = innerWidth; cc.height = innerHeight;
         const colors = ['#6366f1', '#22d3ee', '#f472b6', '#34d399', '#fbbf24', '#ffffff'];
         for (let i = 0; i < 140; i++) {
