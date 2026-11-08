@@ -458,3 +458,17 @@ select.enhanced { display: none; }
     background: rgba(15, 23, 42, 0.05);
     border-color: rgba(15, 23, 42, 0.15);
 }
+
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-row .submit-btn { flex: 1 1 140px; width: auto; }
+.btn-row .reset-btn { flex: 0 0 auto; height: 54px; }
+
+[data-theme="light"] .reset-btn:hover { color: #b91c1c; }
+
+@media (max-width: 680px) {
+    .theme-toggle { top: 12px; right: 12px; width: 40px; height: 40px; font-size: 1rem; }
+}
+@media (max-width: 380px) {
+    .theme-toggle { top: 8px; right: 8px; width: 36px; height: 36px; font-size: .9rem; }
+    .btn-row .reset-btn { flex: 1 1 100%; }
+}
