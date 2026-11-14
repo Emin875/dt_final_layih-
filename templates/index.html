@@ -143,7 +143,7 @@
     try { document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark'; }
     catch (e) { document.documentElement.dataset.theme = 'dark'; }
 
-        (function () {
+    (function () {
         var root = document.documentElement;
         var btn = document.getElementById('themeToggle');
         var icon = btn.querySelector('i');
@@ -161,14 +161,32 @@
         });
     })();
 
-        if (localStorage.getItem('form_submitted') === 'true') {
-        document.getElementById('surveyForm').style.display = 'none';
-        document.getElementById('successMessage').style.display = 'block';
-    }
+    (function () {
+        var KEY = 'form_submitted';
+        var form = document.getElementById('surveyForm');
+        var msg = document.getElementById('successMessage');
 
-    document.getElementById('surveyForm').addEventListener('submit', function() {
-        localStorage.setItem('form_submitted', 'true');
-    });
+        function isSubmitted() {
+            try { if (localStorage.getItem(KEY) === 'true') return true; } catch (e) {}
+            return document.cookie.indexOf(KEY + '=true') !== -1;
+        }
+
+        function markSubmitted() {
+            try { localStorage.setItem(KEY, 'true'); } catch (e) {}
+            document.cookie = KEY + '=true; max-age=31536000; path=/; SameSite=Lax';
+        }
+
+        function check() {
+            if (isSubmitted()) {
+                form.style.display = 'none';
+                msg.style.display = 'block';
+            }
+        }
+
+        check();
+        window.addEventListener('pageshow', check);
+        form.addEventListener('submit', markSubmitted, true);
+    })();
 </script>
 
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
