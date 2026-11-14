@@ -160,6 +160,15 @@
             apply(root.dataset.theme === 'dark' ? 'light' : 'dark');
         });
     })();
+
+        if (localStorage.getItem('form_submitted') === 'true') {
+        document.getElementById('surveyForm').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
+    }
+
+    document.getElementById('surveyForm').addEventListener('submit', function() {
+        localStorage.setItem('form_submitted', 'true');
+    });
 </script>
 
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
