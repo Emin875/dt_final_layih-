@@ -140,27 +140,6 @@
 </button>
 
 <script>
-    try { document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark'; }
-    catch (e) { document.documentElement.dataset.theme = 'dark'; }
-
-    (function () {
-        var root = document.documentElement;
-        var btn = document.getElementById('themeToggle');
-        var icon = btn.querySelector('i');
-
-        function apply(theme) {
-            root.dataset.theme = theme;
-            icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-            try { localStorage.setItem('theme', theme); } catch (e) {}
-        }
-
-        apply(root.dataset.theme || 'dark');
-
-        btn.addEventListener('click', function () {
-            apply(root.dataset.theme === 'dark' ? 'light' : 'dark');
-        });
-    })();
-
     (function () {
         var KEY = 'form_submitted';
         var form = document.getElementById('surveyForm');
@@ -187,6 +166,29 @@
         window.addEventListener('pageshow', check);
         form.addEventListener('submit', markSubmitted, true);
     })();
+
+    try { document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark'; }
+    catch (e) { document.documentElement.dataset.theme = 'dark'; }
+
+    (function () {
+        var root = document.documentElement;
+        var btn = document.getElementById('themeToggle');
+        var icon = btn.querySelector('i');
+
+        function apply(theme) {
+            root.dataset.theme = theme;
+            icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            try { localStorage.setItem('theme', theme); } catch (e) {}
+        }
+
+        apply(root.dataset.theme || 'dark');
+
+        btn.addEventListener('click', function () {
+            apply(root.dataset.theme === 'dark' ? 'light' : 'dark');
+        });
+    })();
+
+
 </script>
 
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
