@@ -152,7 +152,6 @@
 
         function markSubmitted() {
             try { localStorage.setItem(KEY, 'true'); } catch (e) {}
-            document.cookie = KEY + '=true; max-age=31536000; path=/; SameSite=Lax';
         }
 
         function check() {
@@ -164,7 +163,14 @@
 
         check();
         window.addEventListener('pageshow', check);
-        form.addEventListener('submit', markSubmitted, true);
+
+        var origFetch = window.fetch;
+        window.fetch = function () {
+            return origFetch.apply(this, arguments).then(function (res) {
+                if (res.ok) { markSubmitted(); setTimeout(check, 2500); }
+                return res;
+            });
+        };
     })();
 
     try { document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark'; }
@@ -187,8 +193,6 @@
             apply(root.dataset.theme === 'dark' ? 'light' : 'dark');
         });
     })();
-
-
 </script>
 
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
