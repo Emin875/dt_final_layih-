@@ -1,5 +1,5 @@
 import os
-from flask import Flask, redirect, render_template, request, url_for, session
+from flask import Flask, redirect, render_template, request, url_for, session, make_response
 import psycopg2
 
 app = Flask(__name__)
@@ -13,6 +13,9 @@ def get_db_connection():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+  if request.method == "POST" and request.cookies.get("form_submitted") == "true":
+    return "Siz artıq bu sorğunu cavablandırmısınız.", 403
+
   conn = get_db_connection()
   cur = conn.cursor()
 
@@ -44,7 +47,15 @@ def index():
     cur.close()
     conn.close()
 
-    return redirect(url_for("index"))
+    resp = make_response(redirect(url_for("index")))
+    resp.set_cookie(
+        "form_submitted",
+        "true",
+        max_age=60 * 60 * 24 * 365,
+        samesite="Lax",
+        secure=True,
+    )
+    return resp
 
   cur.execute("SELECT id, name FROM activities;")
   activities = cur.fetchall()
